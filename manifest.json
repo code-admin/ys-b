@@ -52,6 +52,11 @@
         "setting" : {
             "urlCheck" : false,
             "es6" : true
+        },
+        "permission" : {
+            "scope.userLocation" : {
+                "desc" : "通过定位选择收获地址"
+            }
         }
     },
     "h5" : {

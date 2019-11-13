@@ -1,72 +1,112 @@
 <template>
 	<view>
 		<cu-custom bgColor="bg-gradual-red" :isBack="true">
-			<block slot="backText">返回</block>
+			<block slot="backText">{{directJump ? '首页' : '返回'}}</block>
 			<block slot="content">反馈详情</block>
 		</cu-custom>
 
-		<view class="cu-bar bg-white solid-bottom margin-top-sm">
-			<view class="action">
-				<text class="cuIcon-titles text-orange"></text> 反馈信息
+		<view class="fb-content margin-bottom-xl" v-if="feedback.historyList && feedback.historyList.length > 0" >
+			<view class="cu-bar bg-white solid-bottom margin-top-sm">
+				<view class="action">
+					<text class="cuIcon-titles text-orange"></text> 回馈信息
+				</view>
 			</view>
-		</view>
-
-		<form>
-			<view class="cu-form-group ">
-				<view class="title">问题类型:</view>
-				<picker @change="PickerChange" :value="index" :range="picker">
-					<view class="picker">
-						{{index>-1?picker[index]:'质量问题'}}
+			<view class="bg-white margin-top">
+				<view class="cu-timeline">
+					<view :class="{ 'cu-item': true, 'text-blue': index == 0 }" :key="index" v-for="(history, index) in feedback.historyList">
+						<view class="content">
+							<view class="cu-capsule radius">
+								<view :class="['cu-tag', index == 0 ? 'bg-cyan':'bg-grey']">{{history.createBy}}</view>
+								<view :class="['cu-tag', index == 0 ? 'line-cyan':'line-grey']">{{history.createTime}}</view>
+							</view>
+							<view class="margin-top">{{history.description}}</view>
+						</view>
 					</view>
-				</picker>
-			</view>
-			<view class="cu-form-group align-start">
-				<view class="title">具体说明:</view>
-				<textarea maxlength="-1" :disabled="modalName!=null" @input="textareaBInput" value="这是一段很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长的说明文字"></textarea>
-			</view>
-			<view class="cu-form-group">
-				<view class="title">客户名称:</view>
-				<input placeholder="请输入客户名称" name="input" value="章细花"></input>
-			</view>
-			<view class="cu-form-group">
-				<view class="title">联系电话:</view>
-				<input placeholder="请输入客户名称" name="input" value="13800138000"></input>
-			</view>
-			<view class="cu-form-group">
-				<view class="title">要求:</view>
-				<input placeholder="请输入要求" name="input" value="无"></input>
-			</view>
-			<view class="cu-form-group">
-				<view class="title">机台号:</view>
-				<input placeholder="请输入机台号" name="input" value="17"></input>
-				<view class="title">生产日期:</view>
-				<input placeholder="请输入生产日期" name="input" value="2019-06-18"></input>
-			</view>
-			<view class="cu-form-group">
-				<view class="title">宽度:</view>
-				<input placeholder="请输入宽度" name="input" value="60"></input>
-				<view class="title">克重:</view>
-				<input placeholder="请输入克重" name="input" value="55"></input>
-			</view>
-		</form>
-
-		<view class="cu-bar bg-white solid-bottom margin-top-sm">
-			<view class="action">
-				<text class="cuIcon-titles text-orange"></text> 回馈信息
+				</view>
 			</view>
 		</view>
-		<form>
-			<view class="cu-form-group">
-				<view class="title">回馈人:</view>
-				<input placeholder="请输入回馈人" name="input" value="卓军"></input>
-				<view class="title">回馈时间:</view>
-				<input placeholder="请输入回馈时间" name="input" value="2019-07-01"></input>
+		
+		<view class="fb-content margin-bottom-xl">
+			<view class="cu-bar bg-white solid-bottom margin-top-sm">
+				<view class="action">
+					<text class="cuIcon-titles text-orange"></text> 反馈信息
+				</view>
 			</view>
-			<view class="cu-form-group align-start">
-				<view class="title">回馈内容:</view>
-				<textarea maxlength="-1" :disabled="modalName!=null" @input="textareaBInput" value="这是一段很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长的反馈信息"></textarea>
+			<view class="cu-item flex align-center">
+				<view class="title text-grey padding-sm">问题类型：</view>
+				<view class="cu-tag light bg-orange radius padding-sm">{{feedback.questionTypeName || ''}}</view>
 			</view>
-		</form>
+			<!-- <view class="cu-item flex">
+				<view class="title text-grey padding-sm">问题标题：</view>
+				<view class="padding-sm">{{feedback.questionName || ''}}</view>
+			</view> -->
+			<view class="cu-item flex align-start">
+				<view class="title text-grey padding-sm">问题描述：</view>
+				<view class="padding-sm">{{feedback.description || ''}}</view>
+			</view>
+			
+			
+			<view class="cu-item flex align-start">
+				<view class="title text-grey padding-sm">图片预览：</view>
+			</view>
+			<view class="cu-item flex align-start padding-sm">
+				<view class="grid col-4 grid-square flex-sub">
+					<view class="bg-img" v-for="(item,index) in feedback.files" :key="index" @tap="viewImage" :data-url="item">
+					 <image :src="item" mode="aspectFill"></image>
+					</view>
+				</view>
+			</view>
+			
+			<view class="cu-bar bg-white solid-bottom margin-top-sm">
+				<view class="action">
+					<text class="cuIcon-titles text-orange"></text> 客户信息
+				</view>
+			</view>
+			<view class="cu-item flex">
+				<view class="title text-grey padding-sm">客户名称：</view>
+				<view class="padding-sm">{{feedback.customerName || ''}}</view>
+			</view>
+			<view class="cu-item flex">
+				<view class="title text-grey padding-sm">联系电话：</view>
+				<view class="padding-sm">{{feedback.phone || ''}}</view>
+			</view>
+			
+			<view class="cu-bar bg-white solid-bottom margin-top-sm">
+				<view class="action">
+					<text class="cuIcon-titles text-orange"></text> 订单信息
+				</view>
+			</view>
+			<view class="cu-item flex">
+				<view class="title text-grey padding-sm">关联订单：</view>
+				<view class="padding-sm">{{feedback.orderNo || ''}}</view>
+			</view>
+			<view class="cu-item flex">
+				<view class="title text-grey padding-sm">产品名称：</view>
+				<view class="padding-sm">{{productName || ''}}</view>
+			</view>
+			<view class="cu-item flex">
+				<view class="title text-grey padding-sm">要&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;求：</view>
+				<view class="padding-sm">{{feedback.requirement || ''}}</view>
+			</view>
+			
+			<view class="cu-item flex">
+				<view class="title text-grey padding-sm">宽&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;度：</view>
+				<view class="padding-sm">{{feedback.width|| ''}}(cm)</view>
+				<view class="title text-grey padding-sm">克&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;重：</view>
+				<view class="padding-sm">{{feedback.weight || ''}}(g)</view>
+			</view>
+			<view class="cu-item flex">
+				<view class="title text-grey padding-sm">个&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;数：</view>
+				<view class="padding-sm">{{feedback.number || ''}}</view>
+			</view>
+			<view class="cu-item flex padding-bottom-xl">
+				<view class="title text-grey padding-sm">机&nbsp;&nbsp;台&nbsp;&nbsp;号：</view>
+				<view class="padding-sm">{{feedback.deviceNo || ''}}</view>
+				<view class="title text-grey padding-sm">生产日期：</view>
+				<view class="padding-sm">{{feedback.productDate||''}}</view>
+			</view>
+		</view>
+		
 	</view>
 </template>
 
@@ -74,15 +114,48 @@
 	export default {
 		data() {
 			return {
-
+				feedback: {},
+				feedbackId: null,
+				directJump: false,
 			}
 		},
+		onLoad(options) {
+			this.directJump = getCurrentPages().length == 1;
+			this.feedbackId = options.feedbackId;
+			this.queryFeedback();
+		},
 		methods: {
-
+			queryFeedback(){
+				this.$request.post({
+					url: "/feedback/getFeedbackById/" + this.feedbackId
+				}).then(res =>{
+					this.feedback = res.data
+				});
+			},
+			viewImage(e) {
+				uni.previewImage({
+					urls: this.feedback.files,
+					current: e.currentTarget.dataset.url
+				});
+			},
 		}
 	}
 </script>
 
-<style>
+<style lang="scss" scoped>
+	.fb-content{
+		background-color: white;
+	}
+	.cu-item {
+		.text-grey {
+			display: flex;
+			// flex-basis: 65px;
+			white-space: nowrap;			
+			justify-content: space-between;
+			&+.padding-right-xl,&+.padding-right-xs{
+				min-width: 75px;
+			}
+		}
+	}
 
 </style>

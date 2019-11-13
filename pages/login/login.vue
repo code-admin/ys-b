@@ -13,7 +13,7 @@
 			<view class="login">
 				<view class="margin padding-sm solid line-green round flex justify-start align-center">
 					<text class="lg text-grey cuIcon-people padding-right margin-right solid-right"></text>
-					<input type="text" placeholder="请输入用户名" maxlength="30" v-model="user.userName" />
+					<input type="text" placeholder="请输入用户名" maxlength="30" v-model="user.username" />
 				</view>
 				<view class="margin padding-sm solid line-green round flex justify-start align-center">
 					<text class="lg text-grey cuIcon-lock padding-right margin-right solid-right"></text>
@@ -44,7 +44,7 @@
 		data() {
 			return {
 				user: {
-					userName: '',
+					username: '',
 					password: ''
 				},
 				loding: false
@@ -52,38 +52,39 @@
 		},
 		methods: {
 			doLogin() {
-				this.loding = !this.loding
-				uni.request({
-					url: 'https://www.qitong-tech.com/iot-backend/login/login',
-					method: 'POST',
-					data: {
-						username: this.user.userName,
-						password: this.user.password
+				this.$request.post({
+					url: `login/login`,
+					data:{
+						openId:uni.getStorageSync('openId'),
+						...this.user
 					},
-					success: res => {
-						if (res.data.code === 10000) {
-							// 登录成功！
-							uni.navigateTo({
-								url: '/pages/user/info/info'
-							});
-						} else {
-							// 掉手机震动
-							uni.vibrateLong({});
-							// 弹出错误提示
-							uni.showToast({
-								title: `${res.data.message} 请与管理员联系`,
-								icon: 'none',
-								duration: 2000,
-							})
+					loadingTip: '正在获取身份验证...'
+				}).then(res => {
+					console.log(res)
+					uni.showToast({
+						duration: 3000, 
+						title: res.message,
+						icon: res.code === 10000 ? "success": "none",
+						success: ()=> {
+							uni.setStorageSync('registerFlag', true);
+							setTimeout(() =>{
+								if(res.code === 10000){
+									uni.navigateTo({
+										url: '/pages/index/index',
+									})
+								}
+							}, 1000);
 						}
-					},
-					fail: err => {
-						console.log(err)
-					},
-					complete: () => {
-						this.loding = !this.loding
-					}
-				});
+					})
+				}).catch(err => {
+					//TODO handle the exception
+					this.loding = !this.loding
+					uni.showToast({
+						duration: 3000,
+						title: err.message,
+						icon:"none",
+					})
+				})
 			}
 		}
 	}

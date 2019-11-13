@@ -6,10 +6,13 @@
 				<block slot="content">个人信息</block>
 			</cu-custom>
 			<view class="margin-xl flex justify-center">
-				<view class="cu-avatar xl round margin-left" style="background-image:url(https://ossweb-img.qq.com/images/lol/web201310/skin/big99008.jpg);"></view>
+				<view class="cu-avatar xl round margin-left" v-if="userInfo == null || userInfo.avatar == null" 
+				style="background-image:url(https://ossweb-img.qq.com/images/lol/web201310/skin/big99008.jpg);"></view>
+				<view class="cu-avatar xl round margin-left" v-else :style="'background-image:url('+userInfo.avatar+');'"></view>
 			</view>
-			<view class="flex justify-center text-xl text-bold">卓钧</view>
-			<view class="flex justify-center margin-top">188 6210 8369</view>
+			<view class="flex justify-center text-xl text-bold">{{userInfo.userName}}</view>
+			<view class="flex justify-center margin-top">{{userInfo.phone}}</view>
+			<!-- <button class="flex margin-top syncinfo cu-btn shadow bg-olive" open-type="getUserInfo" @getuserinfo="getUserInfo">获取个人信息</button> -->
 			<view class="h80"></view>
 		</view>
 
@@ -18,36 +21,38 @@
 				<text class="cuIcon-title text-orange"></text> 基本信息
 			</view>
 			<view class="action">
-				<button class="cu-btn bg-green shadow" @tap="showModal" data-target="menuModal">修改</button>
+				<!-- <navigator class="cu-btn bg-green shadow modifyNav" url="/pages/user/info/modify">修改</navigator> -->
 			</view>
 		</view>
 
 		<view class="cu-list menu card-menu margin-top margin-bottom-xl shadow-lg radius">
-			<view class="cu-item " @click="HandAuth">
-				<view class="content" bindtap="CopyLink" data-link="https://github.com/weilanwl/ColorUI">
+			<view class="cu-item ">
+				<view class="content">
 					<text class="text-green">真实姓名：</text>
-					<text class="text-grey">卓军</text>
+					<text class="text-grey">{{userInfo.userName}} </text>
 				</view>
 			</view>
-			<view class="cu-item " @click="HandAuth">
-				<view class="content" bindtap="CopyLink" data-link="https://github.com/weilanwl/ColorUI">
-					<text class="text-green">等级：</text>
-					<text class="cuIcon-vip text-orange"></text>
-					<text class="cu-tag round line-orange">超级客户</text>
+			<view class="cu-item ">
+				<view class="content">
+					<text class="text-green">职&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;位：</text>
+					<text class="text-grey">{{userInfo.job.name}}</text>
 				</view>
 			</view>
 			<view class="cu-item">
-				<navigator class="content" url="/pages/about/about/about" hover-class="none">
-					<text class="text-green">手机号：</text>
-					<text class="text-grey">18862108369</text>
-				</navigator>
+				<view class="content">
+					<text class="text-green">部&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;门：</text>
+					<text class="text-grey">{{userInfo.department.departmentName}}</text>
+				</view>
 			</view>
 			<view class="cu-item">
-				<navigator class="content" url="/pages/about/log/log" hover-class="none">
+				<view class="content">
 					<text class="text-green">公司名称：</text>
-					<text class="text-cut text-grey padding-right-sl">上海契通物联网科技有限公司</text>
-					<text class="cu-tag line-green sm">已认证</text>
-				</navigator>
+					<text class="text-grey padding-right-sl">{{userInfo.companyName || ""}}</text>
+					<block v-if="userInfo.organization.orgName">
+						<text class="cu-tag line-green sm margin-top-xs" v-if="userInfo.authStatus == 1">已认证</text>
+						<text class="cu-tag line-gray sm margin-top-xs" v-else>未认证</text>
+					</block>
+				</view>
 			</view>
 		</view>
 	</view>
@@ -57,11 +62,42 @@
 	export default {
 		data() {
 			return {
-
+				userInfo: uni.getStorageSync("user")
 			}
 		},
+		onShow() {
+			this.$request.post({
+				url: "/user/getUserBySessionKey",
+			}).then(res => {
+				this.userInfo = res.data;
+				uni.setStorageSync('user',res.data);
+			})
+		},
 		methods: {
-
+			getUserInfo(e){
+				if(!e.detail) return;
+				let info = e.detail.userInfo;
+				this.userInfo.avatar = info.avatarUrl;
+				this.userInfo.userName = info.nickName;
+				this.userInfo.gender = info.gender;
+				console.log("e", e.detail);
+				console.log(this.userInfo)
+				this.$request.post({
+					url: "/user/saveUser",
+					data: this.userInfo,
+				}).then(res => {
+					console.log(res);
+					uni.showToast({
+						title: res.message,
+						icon: res.code === 10000 ? "" : "none"
+					})
+				})
+			}
+		},
+		computed: {
+			id2corp() {
+				return (this.userInfo && this.userInfo.companyName && this.userInfo.identityCard);
+			}
 		}
 	}
 </script>
@@ -73,5 +109,20 @@
 
 	.h80 {
 		height: 80upx;
+	}
+	.syncinfo {
+		margin: 15px auto 2px;
+		width: 140px;
+	}
+	.content{
+		display: flex;
+		
+		.text-green {
+			display: flex;
+			min-width: 75px;
+		}
+	}
+	.modifyNav {
+		border-radius: 5px;
 	}
 </style>

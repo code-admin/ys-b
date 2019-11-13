@@ -2,7 +2,7 @@
 	<view>
 		<view class="cu-bar bg-white solid-bottom">
 			<view class="action">
-				<text class="cuIcon-titles text-green"></text> 功能分布
+				<text class="cuIcon-titles text-green"></text> 菜单分布
 			</view>
 		</view>
 		<view class="cu-card case no-card">
@@ -56,7 +56,7 @@
 						name: '个人信息',
 						color: 'purple',
 						cuIcon: 'my',
-						page: '/pages/login/login'
+						page: '/pages/user/info/info'
 					},
 					{
 						title: '回馈',
@@ -70,9 +70,17 @@
 		},
 		methods: {
 			NavChange(e) {
-				uni.navigateTo({
-					url: e.currentTarget.dataset.cur
-				})
+				const url = e.currentTarget.dataset.cur
+				
+				if(uni.getStorageSync("registerFlag")){
+					console.log('正在跳转',url);
+					// this.PageCur = url
+					uni.navigateTo({url: url})
+				}else{
+					uni.navigateTo({
+						url: '/pages/login/login',
+					})
+				}
 			}
 		}
 	}

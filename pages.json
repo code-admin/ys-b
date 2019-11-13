@@ -7,6 +7,12 @@
 		}, {
 			"path": "pages/order/index",
 			"style": {}
+		},{
+            "path" : "pages/order/edit",
+            "style" : {}
+        }, {
+			"path": "pages/order/detail",
+			"style": {}
 		}, {
 			"path": "pages/product/product",
 			"style": {}
@@ -17,15 +23,15 @@
 			"path": "pages/feedback/feedback",
 			"style": {}
 		}, {
-			"path": "pages/order/detail",
-			"style": {}
-		}, {
 			"path": "pages/feedback/detail",
 			"style": {}
 		}, {
 			"path": "pages/login/login",
 			"style": {}
-		}, {
+		},{
+		    "path" : "pages/login/register",
+		    "style" : {}
+		},{
 			"path": "pages/user/info/info",
 			"style": {}
 		}, {
@@ -43,7 +49,7 @@
 			"allowsBounceVertical": "NO"
 		},
 		"navigationBarBackgroundColor": "#0081ff",
-		"navigationBarTitleText": "ColorUi for UniApp",
+		"navigationBarTitleText": "浙江亚设塑业",
 		"navigationStyle": "custom",
 		"navigationBarTextStyle": "white"
 	},
