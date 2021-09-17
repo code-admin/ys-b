@@ -23,9 +23,9 @@
 			"path": "pages/feedback/feedback",
 			"style": {}
 		}, {
-			"path": "pages/feedback/detail",
-			"style": {}
-		}, {
+            "path" : "pages/feedback/detail",
+            "style" : {}
+        }, {
 			"path": "pages/login/login",
 			"style": {}
 		},{

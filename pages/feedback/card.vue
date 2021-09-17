@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<navigator :url="'/pages/home/feedback/detail?feedbackId=' + card.id" hover-class="navigator-hover">
+		<navigator :url="'/pages/feedback/detail?feedbackId=' + card.id" hover-class="navigator-hover">
 			<view class="cu-card case">
 				<view class="cu-item shadow">
 					<view class="flex solid-bottom padding justify-between align-center">

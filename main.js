@@ -39,7 +39,7 @@ request.interceptor.response = ((res, config) => {
 	    uni.setStorageSync('sessionKey', res.data.sessionKey);
 	    uni.setStorageSync('registerFlag', res.data.registerFlag);
 		uni.navigateTo({
-		   url: '/pages/loign/login'
+			url: '/pages/loign/login'
 		})
 	}
 	// else if (res.code === 50001) {

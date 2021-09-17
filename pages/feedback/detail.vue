@@ -107,6 +107,32 @@
 			</view>
 		</view>
 		
+		<view class="padding flex flex-direction btn-position">
+			<button class="cu-btn bg-gradual-red lg" @tap="description='',showModal=true">添加回馈</button>
+		</view>
+		
+		<view class="cu-modal" :class="showModal ? 'show':''">
+			<view class="cu-dialog">
+				<view class="cu-bar bg-white justify-end">
+					<view class="content">添加回馈</view>
+					<view class="action" @tap="showModal=false">
+						<text class="cuIcon-close text-red"></text>
+					</view>
+				</view>
+				<view class="cu-form-group margin-top">
+					<view class="title">回馈信息</view>
+					<input v-model="description" placeholder="请输入回馈信息" name="input"></input>
+				</view>
+				<view class="cu-bar bg-white">
+					<view class="action margin-0 flex-sub  solid-left" @tap="showModal=false">
+						取消
+					</view>
+					<view class="action margin-0 flex-sub text-green " @tap="addDescription()">
+						保存
+					</view>
+				</view>
+			</view>
+		</view>
 	</view>
 </template>
 
@@ -117,6 +143,8 @@
 				feedback: {},
 				feedbackId: null,
 				directJump: false,
+				showModal:false,
+				description:''
 			}
 		},
 		onLoad(options) {
@@ -138,6 +166,25 @@
 					current: e.currentTarget.dataset.url
 				});
 			},
+			addDescription(){
+				this.$request.post({
+					url:'feedback/addRemark',
+					loadingTip: '正在提交数据...',
+					data: {
+						feedbackId :this.feedbackId,
+						description:this.description
+					}
+				}).then(res => {
+					this.queryFeedback();
+					this.showModal = !this.showModal;
+				}).catch(err =>{
+					uni.showToast({
+						duration: 3000,
+						title: err.message,
+						icon: "none",
+					})
+				})
+			}
 		}
 	}
 </script>
@@ -157,5 +204,11 @@
 			}
 		}
 	}
-
+	.btn-position{
+		width: 100%;
+		position: fixed;
+		bottom: 65upx;
+		z-index: 10;
+	}
 </style>
+

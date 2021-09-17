@@ -70,7 +70,36 @@
 		</view>
 		
 		<view class="padding flex flex-direction btn-position">
-			<button v-if="!historyFlag"  class="cu-btn bg-blue lg" @tap="showConfirm=true">快速审核</button>
+			<button v-if="!historyFlag"  class="cu-btn bg-gradual-blue lg" @tap="showModal=true">快速审核</button>
+		</view>
+		
+		<view class="cu-modal" :class="showModal ? 'show':''">
+			<view class="cu-dialog">
+				<view class="cu-bar bg-white justify-end">
+					<view class="content">订单审核</view>
+					<view class="action" @tap="showModal=false">
+						<text class="cuIcon-close text-red"></text>
+					</view>
+				</view>
+				<view class="cu-form-group margin-top">
+					<view class="title">审核意见</view>
+					<input v-model="audit.reason" placeholder="请输入审核意见" name="input"></input>
+				</view>
+				<view class="cu-bar bg-white">
+					<view class="action margin-0 flex-sub text-green " @tap="operation(0)">
+						<text class="cuIcon-check"></text>通过
+					</view>
+					<view class="action margin-0 flex-sub text-yellow " @tap="operation(1)">
+						<text class="cuIcon-refresh"></text>驳回
+					</view>
+					<view class="action margin-0 flex-sub text-red " @tap="operation(2)">
+						<text class="cuIcon-close"></text>不通过
+					</view>
+					<view class="action margin-0 flex-sub  solid-left" @tap="showModal=false">
+						<text class="cuIcon-back_android"></text>取消
+					</view>
+				</view>
+			</view>
 		</view>
 		
 	</view>
@@ -90,12 +119,18 @@
 				loading:true,
 				orderInfo:{},
 				confirm:false,
-				showConfirm: false
+				showModal:false,
+				audit: {
+					auditId: null,
+					reason: null,
+					status: null
+				}
 			}
 		},
 		onLoad(options) {
-			this.historyFlag = options.historyFlag
 			options.auditId && this.getOrderInfoById(options.auditId);
+			this.historyFlag = options.historyFlag
+			this.audit.auditId = options.auditId
 		},
 		methods: {
 			// 获取订单详情
@@ -116,13 +151,26 @@
 					})
 				})
 			},
-			hideModal(){
-				this.confirm = !this.confirm
-			},
-			
-			updateData(){
-				this.getOrderInfoById(this.orderInfo.id)
-			},
+			operation(opt){
+				this.audit.status = opt
+				this.$request.post({
+					url:'audit/auditOrder',
+					loadingTip: '正在提交数据...',
+					data:{
+						...this.audit
+					}
+				}).then(res => {
+					this.getOrderInfoById(this.audit.auditId);
+					this.showModal = !this.showModal;
+					this.historyFlag = 1;
+				}).catch(err =>{
+					uni.showToast({
+						duration: 3000,
+						title: err.message,
+						icon: "none",
+					})
+				})
+			}
 		}
 	}
 </script>

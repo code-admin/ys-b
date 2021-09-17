@@ -11,9 +11,9 @@
 				{{tabs[index]}}
 			</view>
 		</scroll-view>
-		<navigator class="nav-position cu-btn shadow bg-gradual-orange radius text-sl" url="/pages/home/feedback/create">
+		<!-- <navigator class="nav-position cu-btn shadow bg-gradual-orange radius text-sl" url="/pages/home/feedback/create">
 			<text class="cuIcon-add"></text>
-		</navigator>
+		</navigator> -->
 		<feedback-card v-for="(item,index) in feedbackList" :key="index" :card="item"></feedback-card>
 		<view class="empty-data" v-if="!isLoading && feedbackList.length == 0">暂无数据</view>
 		<view class="text-center text-gray padding" v-if="showLoadMore">{{loadMoreText}}</view>
@@ -30,11 +30,11 @@
 			return {
 				TabCur: 0,
 				CustomBar: this.CustomBar,
-				tabs: [ '全部', '待反馈', '已反馈' ],
+				tabs: [ '待回馈', '已回馈' ],
 				queryParams: {
 					pageIndex: 1,
 					pageSize: 5,
-					status: null,
+					status: 0,
 				},
 				total: 0,
 				isLoading: false,
@@ -71,7 +71,7 @@
 		methods: {
 			tabSelect(e) {
 				this.TabCur = e.currentTarget.dataset.id;
-				this.queryParams.status = this.TabCur === 0 ? null : this.TabCur - 1;
+				this.queryParams.status = this.TabCur;
 				this.initData();
 			},
 			initData(){
@@ -87,7 +87,7 @@
 				this.$request.post({
 					data: this.queryParams,
 					loadingTip: '加载中...',
-					url: "/feedback/getFeedBackList"
+					url: "feedback/getFeedBackList"
 				}).then(res => {
 					this.isLoading = false;
 					this.total = res.total;

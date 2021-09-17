@@ -46,7 +46,10 @@
 				orderList: []
 			};
 		},
-		created() {
+		// created() {
+		// 	this.initData();
+		// },
+		onShow() {
 			this.initData();
 		},
 		onUnload() {
