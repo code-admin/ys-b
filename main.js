@@ -2,7 +2,7 @@ import Vue from 'vue'
 import App from './App'
 
 import request from './lib/j-request/request.js'
-var baseUrl = 'https://mini.api.melender.cn/yase-miniprogram/'
+var baseUrl = 'https://wx.api.agabus.shop/yase-miniprogram/'
 // #ifdef H5
 baseUrl = '/yase-miniprogram/'
 // #endif

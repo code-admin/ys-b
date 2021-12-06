@@ -2,14 +2,33 @@
 	<view>
 		<view class="cu-bar bg-white solid-bottom">
 			<view class="action">
+				<text class="cuIcon-titles text-green"></text> 物流配送
+			</view>
+		</view>
+		<view class="cu-card case no-card">
+			<view class="cu-item shadow pt30">
+				<view class="nav-list">
+					<view hover-class="none" class="nav-li" navigateTo :class="'bg-'+item.color" @click="NavChange"
+						:style="[{animation: 'show ' + ((index+1)*0.2+1) + 's 1'}]" v-for="(item,index) in dispatchs"
+						:key="index" :data-cur="item.page">
+						<view class="nav-title">{{item.title}}</view>
+						<view class="nav-name">{{item.name}}</view>
+						<text :class="'cuIcon-' + item.cuIcon"></text>
+					</view>
+				</view>
+			</view>
+		</view>
+		<view class="cu-bar bg-white solid-bottom">
+			<view class="action">
 				<text class="cuIcon-titles text-green"></text> 菜单分布
 			</view>
 		</view>
 		<view class="cu-card case no-card">
 			<view class="cu-item shadow pt30">
 				<view class="nav-list">
-					<view hover-class="none" class="nav-li" navigateTo :class="'bg-'+item.color" @click="NavChange" :style="[{animation: 'show ' + ((index+1)*0.2+1) + 's 1'}]"
-					 v-for="(item,index) in elements" :key="index" :data-cur="item.page">
+					<view hover-class="none" class="nav-li" navigateTo :class="'bg-'+item.color" @click="NavChange"
+						:style="[{animation: 'show ' + ((index+1)*0.2+1) + 's 1'}]" v-for="(item,index) in elements"
+						:key="index" :data-cur="item.page">
 						<view class="nav-title">{{item.title}}</view>
 						<view class="nav-name">{{item.name}}</view>
 						<text :class="'cuIcon-' + item.cuIcon"></text>
@@ -25,6 +44,13 @@
 		data() {
 			return {
 				isCard: false,
+				dispatchs: [{
+					title: '配送',
+					name: '配送订单',
+					color: 'orange',
+					cuIcon: 'deliver',
+					page: '/pages/dispatch/order/List'
+				}, ],
 				elements: [{
 						title: '报表',
 						name: '销售报表',
@@ -71,12 +97,14 @@
 		methods: {
 			NavChange(e) {
 				const url = e.currentTarget.dataset.cur
-				
-				if(uni.getStorageSync("registerFlag")){
-					console.log('正在跳转',url);
+
+				if (uni.getStorageSync("registerFlag")) {
+					console.log('正在跳转', url);
 					// this.PageCur = url
-					uni.navigateTo({url: url})
-				}else{
+					uni.navigateTo({
+						url: url
+					})
+				} else {
 					uni.navigateTo({
 						url: '/pages/login/login',
 					})
