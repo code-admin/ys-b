@@ -2,98 +2,104 @@ import Vue from 'vue'
 import App from './App'
 
 import request from './lib/j-request/request.js'
+import amapFile from './lib/amap/amap-wx.130.js'
 var baseUrl = 'https://wx.api.agabus.shop/yase-miniprogram/'
+var amapwx = new amapFile.AMapWX({
+	key: '66dd2d5e3b90d0c625b88159f895b447'
+});
+
 // #ifdef H5
 baseUrl = '/yase-miniprogram/'
 // #endif
-request.setConfig({   
+request.setConfig({
 	baseUrl: baseUrl,
 	debug: false,
 	business: undefined
 })
 // 请求拦截
 request.interceptor.request = (config => {
-    // 给data添加全局请求参数uid    
+	// 给data添加全局请求参数uid    
 	if (!config.data.uid) {
-		config.data.uid = 100    
-	}    
+		config.data.uid = 100
+	}
 	// 给header添加全局请求参数token    
 	if (!config.header.token) {
 		config.header['YS-USER-TOKEN-ID'] = uni.getStorageSync("sessionKey");
-	}   
+	}
 	// 添加一个自定义的参数，默认异常请求都弹出一个toast提示    
 	if (config.toastError === undefined) {
-		config.toastError = true    
-	}    
+		config.toastError = true
+	}
 	return config;
 })
 
 // 全局的业务拦截
 request.interceptor.response = ((res, config) => {
-    if (res.code === 10000) {
+	if (res.code === 10000) {
 		res.success = true;
-	} else if(res.code === 10001){
-		uni.showToast({ icon: "none", title: res.message, duration: 2000})
+	} else if (res.code === 10001) {
+		uni.showToast({
+			icon: "none",
+			title: res.message,
+			duration: 2000
+		})
 	} else if (res.code === 50004) {
-	    uni.setStorageSync('openId', res.data.openId);
-	    uni.setStorageSync('sessionKey', res.data.sessionKey);
-	    uni.setStorageSync('registerFlag', res.data.registerFlag);
+		uni.setStorageSync('openId', res.data.openId);
+		uni.setStorageSync('sessionKey', res.data.sessionKey);
+		uni.setStorageSync('registerFlag', res.data.registerFlag);
 		uni.navigateTo({
 			url: '/pages/loign/login'
 		})
 	}
 	// else if (res.code === 50001) {
- //        // token失效，需要重新登录
- //        uni.navigateTo({
- //            url: '/pages/loign/login'
- //        })
- //    }
+	//        // token失效，需要重新登录
+	//        uni.navigateTo({
+	//            url: '/pages/loign/login'
+	//        })
+	//    }
 	return res;
 })
 
 // 全局的错误异常处理
 request.interceptor.fail = ((res, config) => {
-	let ret = res;    let msg = ''
-	if (res.statusCode === 200) { 
+	let ret = res;
+	let msg = ''
+	if (res.statusCode === 200) {
 		// 业务错误 
 		msg = res.data.message
 		ret = res.data
-	} else if (res.statusCode > 0) { 
+	} else if (res.statusCode > 0) {
 		// HTTP错误 
 		msg = '服务器异常[' + res.statusCode + ']'
 	} else {
 		// 其它错误
 		msg = res.errMsg
-	} 
+	}
 	if (config.toastError) {
 		uni.showToast({
-			title: msg, 
-			duration: 2000, 
-			icon: 'none' ,
-		}) 
-	} 
+			title: msg,
+			duration: 2000,
+			icon: 'none',
+		})
+	}
 	return ret;
 })
 
 import cuCustom from './colorui/components/cu-custom.vue'
-Vue.component('cu-custom',cuCustom)
+Vue.component('cu-custom', cuCustom)
 
 /** 
-* Assign the request to global VUE.
-* @param {Request} $request - The request object.
-*/
+ * Assign the request to global VUE.
+ * @param {Request} $request - The request object.
+ */
 Vue.prototype.$request = request
+Vue.prototype.$amapwx = amapwx
 
 Vue.config.productionTip = false
 
 App.mpType = 'app'
 
 const app = new Vue({
-    ...App
+	...App
 })
 app.$mount()
-
- 
-
-
-

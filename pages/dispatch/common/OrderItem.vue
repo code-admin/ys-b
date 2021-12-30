@@ -1,68 +1,56 @@
 <template>
 	<view>
-		<navigator :url="'/pages/examine/detail?auditId='+ card.auditId + '&historyFlag='+card.historyFlag " hover-class="navigator-hover">
-			<view class="cu-card case">
-				<view class="cu-item shadow">
-					<view class="flex solid-bottom padding justify-between align-center">
-						<view class="text-black text-bold text-grey">{{card.orderNo}}</view>
-						<view v-if="card.historyFlag === 0" class="cu-tag light round bg-blue">待审核</view>
-						<view v-if="card.historyFlag === 1" class="cu-tag light round bg-blue">{{card.statusName}}</view>
+		<view class="cu-card case">
+			<view class="cu-item shadow">
+				<view class="flex solid-bottom padding justify-between align-center">
+					<view class=" text-bold text-orange"><text
+							class="cuIcon-deliver_fill text-shadow padding-right-xs"></text>运费: {{card.amount}} 元
 					</view>
+					<view v-if="card.status === 1" class="cu-tag light round bg-gradual-orange"
+						@click="eceiveDeliver(card)">抢单</view>
+					<view v-else class="text-orange">
+						{{card.statusName}}
+					</view>
+				</view>
+				
+				<navigator :url="'/pages/dispatch/order/detail?deliverId='+ card.id" hover-class="navigator-hover">
 					<view class="padding">
 						<view class="flex justify-between">
 							<view class="flex justify-start">
-								<view class="padding-right-xs text-grey">下单人:</view>
-								<view class="text-center text-shadow">{{card.customerName}}</view>
+								<text class="cuIcon-locationfill text-shadow padding-right-xs text-green"></text>
+								<view class="text-sm">{{card.shippingAddress || '亚迦布科技'}}</view>
+								<view class="text-sm text-center text-grey margin-left">{{card.originDistance/1000}}公里</view>
 							</view>
-							<view class="line-blue">{{card.orderTypeName}}</view>
 						</view>
-
-						<view v-for="product in card.orderExts" :key="product.id">
-							<view class="margin-top">
-								<view class="flex justify-start align-center">
-									<view class="padding-right-xs text-grey">产品:</view>
-									<view class="cu-tag light round bg-cyan sm margin-right-xl">{{product.product.name}}</view>
-									<view class="padding-right-xs text-grey">要求:</view>
-									<view class="padding-right-lg text-red">{{product.requirement}}</view>
+						<view class="flex margin-top-sm justify-between" v-for="(address,index) in card.addressList" :key="index">
+							<view class="flex justify-start">
+								<text v-if="card.addressList.length !== index+1" class="text-sm text-shadow padding-right-xs text-orange">经</text>
+								<text v-else class="cuIcon-locationfill text-shadow padding-right-xs text-orange"></text>
+								<view class="text-sm">{{address}}</view>
+								<!-- <view v-if="card.addressList.length === index+1" class="text-cut text-center text-grey margin-left">{{card.distance}} 公里</view> -->
+							</view>
+						</view>
+						<view class="flex margin-top-sm justify-between">
+							<view class="flex justify-start">
+								<view class="text-sm ">总件数：<text class="bg-gradual-orange">{{card.totalNumber}} (个)</text> </view>
+								<view class="text-sm margin-left">总重量：<text class="bg-gradual-orange">{{card.totalWeight}} (KG)</text>
 								</view>
-							</view>
-							
-							<view v-if="card.orderType === 2" class="flex align-center margin-top-xs">
-								<view class="text-grey">宽度:</view>
-								<view class="margin-right padding-left-xs text-red"> {{product.width}}</view>
-								<view class="text-grey">克重:</view>
-								<view class="margin-right padding-left-xs text-red"> {{product.weight}}</view>
-								<view class="text-grey">米数:</view>
-								<view class="margin-right  padding-left-xs text-red"> {{product.length}}</view>
-								<view class="text-grey">个数:</view>
-								<view class="margin-right padding-left-xs text-red"> {{product.goodsNumber}}</view>
-							</view>
-							<view v-else class="flex align-center margin-top-xs">
-								<view class="text-grey">宽度:</view>
-								<view class="margin-right padding-left-xs text-red"> {{product.width}}</view>
-								<view class="text-grey">克重:</view>
-								<view class="margin-right padding-left-xs text-red"> {{product.weight}}</view>
-								<view class="text-grey">长度:</view>
-								<view class="margin-right  padding-left-xs text-red"> {{product.goodsLength}}</view>
-								<view class="text-grey">条数:</view>
-								<view class="margin-right padding-left-xs text-red"> {{product.goodsNumber}}</view>
-							</view>
-							<view class="flex align-center margin-top-xs">
-								<view class="text-grey">单价:</view>
-								<view class="margin-right padding-left-xs text-red text-price"> {{product.price}}</view>
+								<view class="text-center margin-left text-orange">{{card.distance}} 公里</view>
 							</view>
 						</view>
 					</view>
 
 					<view class="flex solid-top padding justify-between align-center">
 						<view class="text-cut lighttext-blue">
-							<text class="cuIcon-countdown padding-right-xs text-orange"></text>{{card.orderTime}}
+							<text
+								class="cuIcon-countdown text-shadow padding-right-xs text-orange"></text>{{card.createTime}}
 						</view>
-						<view class="text-cut lighttext-blue text-green">详情</view>
+						<view class="text-cut lighttext-blue text-orange">详情</view>
 					</view>
-				</view>
+				</navigator>
 			</view>
-		</navigator>
+		</view>
+
 	</view>
 </template>
 
@@ -78,7 +66,17 @@
 			}
 		},
 		methods: {
-
+			eceiveDeliver(order) {
+				this.$request.post({
+					data: this.queryParams,
+					loadingTip: '加载中...',
+					url: `deliver/receiveDeliver/${order.id}`
+				}).then(res => {
+					if(res.code === 10000){
+						uni.$emit('eceiveDeliverCallBack',order.id)
+					}
+				})
+			}
 		}
 	}
 </script>
@@ -87,7 +85,8 @@
 	.order-code {
 		line-height: 28upx;
 	}
-	.solid-dotted{
+
+	.solid-dotted {
 		border-top: 1upx dotted rgba(0, 0, 0, 0.1);
 	}
 </style>
