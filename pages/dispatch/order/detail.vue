@@ -97,7 +97,9 @@
 
 		</scroll-view>
 
-
+		<view  v-if="deliver.status === 1" class="padding fixed bottom-modal btn-position">
+			<button class="cu-btn block bg-gradual-orange margin-tb-sm lg" @click="eceiveDeliver">抢单</button>
+		</view>
 		<view v-if="deliver.status === 5" class="padding fixed bottom-modal btn-position">
 			<button class="cu-btn block bg-gradual-orange margin-tb-sm lg" @click="flnishOrder">完成</button>
 		</view>
@@ -192,7 +194,7 @@
 					this.deliver = res.data
 					this.markers = [{
 						label: {
-							content: '亚迦布科技（取货地）',
+							content: `${this.deliver.shippingAddress.address}（取货地）`,
 							color: '#F40F40'
 						},
 						latitude: this.deliver.shippingAddress.latitude,
@@ -202,6 +204,16 @@
 						height: 60
 
 					}, ]
+					res.data.orderList.map(item => {
+						this.markers.push({
+							label: {
+								content: `${item.address}（送货地）`,
+								color: '#F40F40'
+							},
+							latitude: item.latitude,
+							longitude: item.longitude,
+						})
+					})
 					this.showMap = true
 					// 出发地
 					const origin =
@@ -285,7 +297,26 @@
 					}
 				})
 			},
-
+			
+			/**
+			 * 
+			 */
+			eceiveDeliver(){
+				this.$request.post({
+					data: this.queryParams,
+					loadingTip: '加载中...',
+					url: `deliver/receiveDeliver/${this.deliver.id}`
+				}).then(res => {
+					if(res.code === 10000){
+						uni.showToast({
+							duration: 3000,
+							title: res.message,
+							icon: "success",
+						})
+						this.getDetailById(this.deliver.id)
+					}
+				})
+			},
 			/**
 			 * 完成订单
 			 */
@@ -344,6 +375,6 @@
 		width: 100%;
 		position: fixed;
 		bottom: 65upx;
-		z-index: 200;
+		z-index: 2000;
 	}
 </style>
