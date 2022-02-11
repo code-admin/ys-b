@@ -12,7 +12,7 @@
 		</view>
 
 
-		<scroll-view scroll-y="true" class="detail-scroll padding">
+		<view class="detail-scroll padding" :userInteractionEnabled="true">
 			<view class="slider bg-white radius ">
 				<view class="cu-bar solid-bottom margin-top-sm">
 					<view class="action">
@@ -41,7 +41,7 @@
 				<view class="solid-bottom flex justify-between">
 					<view class="title text-grey padding-sm">取货地址：</view>
 					<view class="padding-sm">{{deliver.shippingAddress.address || ''}}</view>
-					<button class="cu-btn bg-orange sm round shadow" @click="goOrigin">导航</button>
+					<button class="cu-btn bg-orange sm round shadow" @click.stop="goOrigin">导航</button>
 				</view>
 			</view>
 
@@ -95,7 +95,7 @@
 				</view>
 			</view>
 
-		</scroll-view>
+		</view>
 
 		<view  v-if="deliver.status === 1" class="padding fixed bottom-modal btn-position">
 			<button class="cu-btn block bg-gradual-orange margin-tb-sm lg" @click="eceiveDeliver">抢单</button>
@@ -359,6 +359,7 @@
 			position: relative;
 			top: 50vh;
 			z-index: 1000;
+			overflow-y: scroll;
 		}
 
 		// .info-body {

@@ -9,10 +9,10 @@
 					</view>
 				</view>
 				<view v-if="deliver.status===3 && !order.deliverStatus" class="text-sm cu-tag light round bg-gradual-orange shadow"
-					@click.stop="getNowLocation(1)">开始配送
+					@tap="getNowLocation(1)">开始配送
 				</view>
 				<view v-if="deliver.status > 3 && order.deliverStatus !==2" class="text-sm cu-tag light round bg-gradual-orange shadow"
-					@click.stop="getNowLocation(2)">完成配送
+					@tap="getNowLocation(2)">完成配送
 				</view>
 			</view>
 
@@ -31,7 +31,7 @@
 				<view class="text-cut lighttext-blue">
 					<text class="cuIcon-locationfill text-shadow padding-right-xs">{{order.address}}</text>
 				</view>
-				<button class="cu-btn bg-orange round sm shadow" @click="goAddress">导航</button>
+				<button class="cu-btn bg-orange round sm shadow" @tap="goAddress">导航</button>
 			</view>
 		</view>
 	</view>
