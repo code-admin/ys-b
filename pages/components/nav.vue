@@ -97,7 +97,6 @@
 		methods: {
 			NavChange(e) {
 				const url = e.currentTarget.dataset.cur
-
 				if (uni.getStorageSync("registerFlag")) {
 					console.log('正在跳转', url);
 					// this.PageCur = url

@@ -10,9 +10,94 @@
 				:longitude="long" :markers="markers" :polyline="polyline" :show-location="true">
 			</map>
 		</view>
+		
+<!--  
+		<cover-view class="detail-scroll padding" id="detailScroll">
+			<cover-view class="slider bg-white radius ">
+				<cover-view class="cu-bar solid-bottom margin-top-sm">
+					<view class="action">
+						<text class="cuIcon-deliver_fill text-orange"> {{deliver.deliverNumber || ''}}</text>
+					</view>
+					<cover-view class="action text-sm text-gray">{{deliver.createTime}}</cover-view>
+				</cover-view>
+
+				<cover-view class="cu-steps steps-arrow margin">
+					<cover-view class="cu-item" :class="item.id > deliver.status ? '':'text-orange'"
+						v-for="(item,index) in statusList" :key="index">
+						{{item.name}}
+					</cover-view>
+				</cover-view>
+
+				<cover-view class="solid-bottom flex">
+					<cover-view class="title text-grey padding-sm">联系人：</cover-view>
+					<cover-view class="padding-sm">{{deliver.createUser.userName || ''}}</cover-view>
+				</cover-view>
+
+				<cover-view class="solid-bottom flex">
+					<cover-view class="title text-grey padding-sm">联系电话：</cover-view>
+					<cover-view class="padding-sm">{{deliver.createUser.phone || ''}}</cover-view>
+				</cover-view>
+
+				<cover-view class="solid-bottom flex justify-between">
+					<cover-view class="title text-grey padding-sm">取货地址：</cover-view>
+					<cover-view class="padding-sm">{{deliver.shippingAddress.address || ''}}</cover-view>
+					<button class="cu-btn bg-orange sm round shadow" @click.stop="goOrigin">导航</button>
+				</cover-view>
+			</cover-view>
 
 
-		<view class="detail-scroll padding" :userInteractionEnabled="true">
+			<cover-view class="slider bg-white radius margin-top-sm">
+				<cover-view class="cu-bar solid-bottom">
+					<cover-view class="action">
+						<text class="cuIcon-fork text-orange">关联订单</text>
+					</cover-view>
+				</cover-view>
+				<order-item :deliver="deliver" :order="order" :mapContext='mapContext'
+					v-for="order in deliver.orderList" :key="order.id">
+				</order-item>
+			</cover-view>
+
+
+			<cover-view class="slider bg-white radius margin-top-sm" v-if="orderExpressList.length">
+				<cover-view class="cu-bar solid-bottom">
+					<cover-view class="action">
+						<text class="cuIcon-squarecheckfill text-orange">出库记录</text>
+					</cover-view>
+				</cover-view>
+				<cover-view class="flex justify-start padding-sm text-sm"
+					v-for="orderExpress in deliver.orderExpressList" :key="orderExpress.id">
+					<cover-view class="cu-tags radio sm light bg-orange"> {{orderExpress.orderId}} </cover-view>
+					<cover-view class="margin-left text-yellow">
+						{{`${orderExpress.productName}/${orderExpress.productNo}`}}
+					</cover-view>
+					<cover-view class="margin-left">x {{orderExpress.number}}</cover-view>
+					<cover-view class="margin-left text-red">{{orderExpress.totalWeight}} KG </cover-view>
+				</cover-view>
+			</cover-view>
+
+
+			<cover-view class="slider bg-white radius margin-top-sm">
+				<cover-view class="cu-bar solid-bottom ">
+					<cover-view class="action">
+						<text class="cuIcon-timefill text-orange">流转信息</text>
+					</cover-view>
+				</cover-view>
+				<cover-view class="cu-timeline">
+					<cover-view class="cu-time"> 最新</cover-view>
+					<cover-view class="cu-item cur" v-for="(itemTime,index) in deliver.histories" :key="index"
+						:class="index===0 ? 'cuIcon-timefill text-orange':'' ">
+						<cover-view class="content shadow-blur text-sm" :class="index===0 ? 'bg-gradual-orange':'' ">
+							<text class="padding-right-xl">{{itemTime.createTime}}</text> {{itemTime.remark}}
+						</cover-view>
+					</cover-view>
+					<cover-view class="cu-time ">...</cover-view>
+				</cover-view>
+			</cover-view>
+
+		</cover-view>
+
+		-->
+		<view class="detail-scroll padding" id="detailScroll">
 			<view class="slider bg-white radius ">
 				<view class="cu-bar solid-bottom margin-top-sm">
 					<view class="action">
@@ -41,11 +126,13 @@
 				<view class="solid-bottom flex justify-between">
 					<view class="title text-grey padding-sm">取货地址：</view>
 					<view class="padding-sm">{{deliver.shippingAddress.address || ''}}</view>
-					<button class="cu-btn bg-orange sm round shadow" @click.stop="goOrigin">导航</button>
+					<view class="padding-sm">
+						<button class="cu-btn bg-orange sm round shadow" @click.stop="goOrigin">导航</button>
+					</view>
 				</view>
 			</view>
 
-			<!-- 关联订单 -->
+			
 
 			<view class="slider bg-white radius margin-top-sm">
 				<view class="cu-bar solid-bottom">
@@ -58,9 +145,8 @@
 				</order-item>
 			</view>
 
-			<!-- 出库记录 -->
-
-			<view class="slider bg-white radius margin-top-sm">
+			
+			<view class="slider bg-white radius margin-top-sm" v-if="orderExpressList.length">
 				<view class="cu-bar solid-bottom">
 					<view class="action">
 						<text class="cuIcon-squarecheckfill text-orange">出库记录</text>
@@ -97,13 +183,12 @@
 
 		</view>
 
-		<view  v-if="deliver.status === 1" class="padding fixed bottom-modal btn-position">
+		<view v-if="deliver.status === 1" class="padding fixed bottom-modal btn-position">
 			<button class="cu-btn block bg-gradual-orange margin-tb-sm lg" @click="eceiveDeliver">抢单</button>
 		</view>
 		<view v-if="deliver.status === 5" class="padding fixed bottom-modal btn-position">
 			<button class="cu-btn block bg-gradual-orange margin-tb-sm lg" @click="flnishOrder">完成</button>
 		</view>
-
 	</view>
 </template>
 <script>
@@ -146,6 +231,16 @@
 		onLoad(options) {
 			this.deliver.id = options.deliverId
 			this.mapContext = uni.createMapContext('map1', this)
+			// 创建客户端图层
+			this.mapContext.addCustomLayer({
+				layerId: 'detailScroll',
+				success: res => {
+					console.log('创建客户端图层成功:', res)
+				},
+				fail: err => {
+					console.log('创建客户端图层失败:', err)
+				}
+			});
 			// 获取当前定位，并规划订单线路。
 			uni.getLocation({
 				type: 'gcj02',
@@ -193,6 +288,7 @@
 				}).then(res => {
 					this.deliver = res.data
 					this.markers = [{
+						id: 100000,
 						label: {
 							content: `${this.deliver.shippingAddress.address}（取货地）`,
 							color: '#F40F40'
@@ -206,12 +302,15 @@
 					}, ]
 					res.data.orderList.map(item => {
 						this.markers.push({
+							id: item.id,
 							label: {
 								content: `${item.address}（送货地）`,
 								color: '#F40F40'
 							},
 							latitude: item.latitude,
 							longitude: item.longitude,
+							width: 60,
+							height: 60
 						})
 					})
 					this.showMap = true
@@ -297,17 +396,17 @@
 					}
 				})
 			},
-			
+
 			/**
 			 * 
 			 */
-			eceiveDeliver(){
+			eceiveDeliver() {
 				this.$request.post({
 					data: this.queryParams,
 					loadingTip: '加载中...',
 					url: `deliver/receiveDeliver/${this.deliver.id}`
 				}).then(res => {
-					if(res.code === 10000){
+					if (res.code === 10000) {
 						uni.showToast({
 							duration: 3000,
 							title: res.message,

@@ -4,6 +4,7 @@ import App from './App'
 import request from './lib/j-request/request.js'
 import amapFile from './lib/amap/amap-wx.130.js'
 var baseUrl = 'https://wx.api.agabus.shop/yase-miniprogram/'
+// var baseUrl = 'https://test.agabus.shop/yase-miniprogram/'
 var amapwx = new amapFile.AMapWX({
 	key: '66dd2d5e3b90d0c625b88159f895b447'
 });

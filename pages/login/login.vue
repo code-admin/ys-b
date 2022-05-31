@@ -1,7 +1,7 @@
 <template>
 	<view>
 		<view class="page bg-white">
-			<cu-custom bgImage="https://image.weilanwl.com/color2.0/index.jpg" :isBack="true">
+			<cu-custom bgColor="bg-gradual-green" :isBack="true">
 				<block slot="backText">返回</block>
 				<block slot="content">登录</block>
 			</cu-custom>
@@ -21,7 +21,8 @@
 				</view>
 
 				<view class="margin-sm padding-sm">
-					<button :disabled="loding" class="cu-btn block bg-gradual-green margin-tb-sm lg round" @click="doLogin">
+					<button :disabled="loding" class="cu-btn block bg-gradual-green margin-tb-sm lg round"
+						@click="doLogin">
 						<text v-if="loding" class="cuIcon-loading2 cuIconfont-spin"></text> 登录
 					</button>
 				</view>
@@ -51,24 +52,39 @@
 			}
 		},
 		methods: {
+
 			doLogin() {
+				if (!this.user.username || !this.user.password) {
+					// console.log('用户名或密码不能为空！')
+					uni.vibrateLong({
+						success: function () {
+							console.log('用户名或密码不能为空!');
+						}
+					});
+					uni.showToast({
+						title: '用户名或密码不能为空!',
+						duration: 3000,
+						icon: "none",
+					});
+					return this.loding = false
+				}
 				this.$request.post({
 					url: `login/login`,
-					data:{
-						openId:uni.getStorageSync('openId'),
+					data: {
+						openId: uni.getStorageSync('openId'),
 						...this.user
 					},
 					loadingTip: '正在获取身份验证...'
 				}).then(res => {
 					console.log(res)
 					uni.showToast({
-						duration: 3000, 
+						duration: 3000,
 						title: res.message,
-						icon: res.code === 10000 ? "success": "none",
-						success: ()=> {
+						icon: res.code === 10000 ? "success" : "none",
+						success: () => {
 							uni.setStorageSync('registerFlag', true);
-							setTimeout(() =>{
-								if(res.code === 10000){
+							setTimeout(() => {
+								if (res.code === 10000) {
 									uni.navigateTo({
 										url: '/pages/index/index',
 									})
@@ -78,11 +94,11 @@
 					})
 				}).catch(err => {
 					//TODO handle the exception
-					this.loding = !this.loding
+					this.loding = false
 					uni.showToast({
 						duration: 3000,
 						title: err.message,
-						icon:"none",
+						icon: "none",
 					})
 				})
 			}

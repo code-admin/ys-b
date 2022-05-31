@@ -29,6 +29,26 @@
 				}],
 				dotStyle: true
 			};
+		},
+		
+		onLoad() {
+			this.getBannerList();
+		},
+		
+		methods:{
+			getBannerList(){
+				this.$request.post({
+					data: {},
+					loadingTip: '加载中...',
+					url: "index/getBannerList"
+				}).then(res => {
+					if(res.data.length){
+						this.feedbackList = res.data ;
+					}
+				}).catch(() =>{
+					console.log('banner loading err!!!!')
+				})
+			}
 		}
 	}
 </script>

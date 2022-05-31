@@ -24,7 +24,7 @@
 						</view>
 						<view class="flex margin-top-sm justify-between" v-for="(address,index) in card.addressList" :key="index">
 							<view class="flex justify-start">
-								<text v-if="card.addressList.length !== index+1" class="text-sm text-shadow padding-right-xs text-orange">经</text>
+								<text v-if="card.addressList.length !== index+1" class="text-sm text-shadow padding-right-xs text-orange">拼</text>
 								<text v-else class="cuIcon-locationfill text-shadow padding-right-xs text-orange"></text>
 								<view class="text-sm">{{address}}</view>
 								<!-- <view v-if="card.addressList.length === index+1" class="text-cut text-center text-grey margin-left">{{card.distance}} 公里</view> -->
